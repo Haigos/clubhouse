@@ -1,3 +1,5 @@
+import { useAuthContext } from './hooks/useAuthContext'
+
 // styles
 import './App.css'
 
