@@ -4,7 +4,7 @@ import { useAuthContext } from './hooks/useAuthContext'
 import './App.css'
 
 // react router
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
 
 // pages
 import Dashboard from './pages/dashboard/Dashboard'
@@ -14,37 +14,48 @@ import Login from './pages/login/Login'
 import Project from './pages/project/Project'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
+import OnlineUsers from './components/OnlineUsers'
 
 function App() {
+  const { user, authIsReady } = useAuthContext()
+
   return (
     <div className="App">
-      <BrowserRouter>
-        <Sidebar />
-        <div className="container">
-          <Navbar />
-          <Switch>
-            <Route exact path='/'>
-              <Dashboard />
-            </Route>
+      {authIsReady && (
+        <BrowserRouter>
+          {user && <Sidebar />}
+          <div className="container">
+            <Navbar />
+            <Switch>
+              <Route exact path='/'>
+                {!user && <Redirect to="/login" />}
+                {user && <Dashboard />}
+              </Route>
 
-            <Route exact path='/signup'>
-              <Signup />
-            </Route>
+              <Route exact path='/signup'>
+                {user && <Redirect to="/" />}
+                {!user && <Signup />}
+              </Route>
 
-            <Route exact path='/login'>
-              <Login />
-            </Route>
+              <Route exact path='/login'>
+                {user && <Redirect to="/" />}
+                {!user && <Login />}
+              </Route>
 
-            <Route exact path='/project/:id'>
-              <Project />
-            </Route>
+              <Route exact path='/project/:id'>
+                {!user && <Redirect to="/login" />}
+                {user && <Project />}
+              </Route>
 
-            <Route exact path='/create'>
-              <Create />
-            </Route>
-          </Switch>
-        </div>
-      </BrowserRouter>
+              <Route exact path='/create'>
+                {!user && <Redirect to="/login" />}
+                {user && <Create />}
+              </Route>
+            </Switch>
+          </div>
+          {user && <OnlineUsers />}
+        </BrowserRouter>
+      )}
     </div>
   );
 }
